@@ -5,7 +5,7 @@
 
   outputs = { self, nixpkgs }:
     let
-      system = ["x86_64-linux" "aarch64-linux"];
+      system = "aarch64-linux";
       pkgs = import nixpkgs { inherit system; };
     in with nixpkgs.lib; {
       nixosModules.default = { config, ... }:
