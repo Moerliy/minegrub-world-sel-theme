@@ -3,26 +3,20 @@
 
   inputs = { nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable"; };
 
-  outputs = { self, nixpkgs, systems }:
-    let    
-      inherit (nixpkgs) lib;
-      eachSystem = lib.genAttrs (import systems);
-      pkgsFor = eachSystem (system:
-      import nixpkgs {
-        localSystem = system;
-      });
-      # system = "aarch64-linux";
-      # pkgs = import nixpkgs { inherit system; };
+  outputs = { self, nixpkgs }:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs { inherit system; };
     in with nixpkgs.lib; {
       nixosModules.default = { config, ... }:
         let
           cfg = config.boot.loader.grub.minegrub-world-sel;
 
-          minegrub-world-sel-theme = pkgsFor.${system}.stdenv.mkDerivation {
+          minegrub-world-sel-theme = pkgs.stdenv.mkDerivation {
             name = "minegrub-world-sel-theme";
             src = "${self}";
 
-            buildInputs = with pkgsFor.${system}; [ jq imagemagick ];
+            buildInputs = [ pkgs.jq pkgs.imagemagick ];
 
             installPhase = ''
               mkdir -p $out/grub/theme/
